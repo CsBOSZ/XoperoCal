@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using xopCal.Model;
 using xopCal.Services;
@@ -7,7 +6,7 @@ namespace xopCal.Controllers;
 
 [Route("Auth")]
 [ApiController]
-public class AuthController
+public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
 
@@ -20,6 +19,13 @@ public class AuthController
     public ActionResult RegisterUser([FromBody]UserDto dto)
     {
         _authService.RegisterUser(dto);
-        return new OkResult();
+        return Ok();
+    }
+    
+    [HttpPost("login")]
+    public ActionResult<string> Login([FromBody]LoginDto dto)
+    {
+        var token = _authService.GetJwt(dto);
+        return Ok(token);
     }
 }
