@@ -55,7 +55,7 @@ public class AuthService : IAuthService
         if (user is null)
         {
             // throw new BadRequestException("Invalid email or password");
-            return "error";
+            return "error Invalid email or password";
         }
 
         var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
@@ -63,11 +63,12 @@ public class AuthService : IAuthService
         if (result == PasswordVerificationResult.Failed)
         {
             // throw new BadRequestException("Invalid email or password");
-            return "error";
+            return "error Invalid email or password";
         }
 
         var claims = new List<Claim>()
         {
+            new Claim(ClaimTypes.Email,user.Email),
             new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
             new Claim(ClaimTypes.Name,user.Name)
         };

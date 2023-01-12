@@ -6,4 +6,7 @@ public class User
     public string Email { get; set; }
     public string Name { get; set; }
     public string PasswordHash { get; set; }
+
+    public virtual List<EventCal> EventCals { get; set; } = new List<EventCal>();
+
 }

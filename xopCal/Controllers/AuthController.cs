@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using xopCal.Model;
 using xopCal.Services;
@@ -26,6 +28,15 @@ public class AuthController : ControllerBase
     public ActionResult<string> Login([FromBody]LoginDto dto)
     {
         var token = _authService.GetJwt(dto);
-        return Ok(token);
+        return token.StartsWith("error") ? NotFound(token) : Ok(token);
     }
+    
+    [HttpGet("test")]
+    [Authorize]
+    public ActionResult<string> test()
+    {
+       var c =  HttpContext.User.FindFirst(ClaimTypes.Email);
+       return Ok(c.Value);
+    }
+    
 }

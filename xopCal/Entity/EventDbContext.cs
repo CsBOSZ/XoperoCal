@@ -20,13 +20,17 @@ public class EventDbContext : DbContext
                 .IsRequired();
             x.Property(r => r.Email)
                 .IsRequired();
-
-        });
-           
             
-        modelBuilder.Entity<EventCal>()
-            .Property(r => r.Name)
-            .IsRequired();
+            x.HasMany(u => u.EventCals)
+                .WithOne(e => e.Owner)
+                .HasForeignKey(e => e.OwnerId);
+        });
+        
+        modelBuilder.Entity<EventCal>(x =>
+        {
+            x.Property(r => r.Name)
+                .IsRequired();
+        });
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

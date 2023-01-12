@@ -11,12 +11,6 @@ using xopCal.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Wyświetlanie/dodawanie/edytowanie/usuwanie alarmów/zdarzeń do wbudowanego kalendarza
-// Wyszukiwanie zdarzeń po nazwie bądź okresie czasu
-//     Eksportowanie wybranych zdarzeń
-// Importowanie zdarzeń z pliku
-// W przypadku alarmu, program powinien wyświetlić powiadomienie (o ile jest uruchomiony) z możliwości snooze/confirm
-//     (Bonus, jeśli reszta pójdzie za szybko) Umożliwienie 2-3 w LAN
 
 
 // Add services to the container.
@@ -56,6 +50,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<EventDbContext>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEventCalService, EventCalService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<UserDto>, UserDtoValidator>();
 builder.Services.AddScoped<IValidator<LoginDto>, LoginDtoValidator>();

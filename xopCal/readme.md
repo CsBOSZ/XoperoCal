@@ -1,0 +1,6 @@
+-[x] Wyświetlanie/dodawanie/edytowanie/usuwanie alarmów/zdarzeń do wbudowanego kalendarza
+-[ ] Wyszukiwanie zdarzeń po nazwie bądź okresie czasu
+-[x] Eksportowanie wybranych zdarzeń
+-[ ] Importowanie zdarzeń z pliku
+-[ ] W przypadku alarmu, program powinien wyświetlić powiadomienie (o ile jest uruchomiony) z możliwości snooze/confirm
+-[ ] (Bonus, jeśli reszta pójdzie za szybko) Umożliwienie 2-3 w LAN
