@@ -1,6 +1,6 @@
 namespace xopCal.Model;
 
-public class EventCalDto
+public class EventCalDtoIn
 {
     public int? Id { get; set; }
     

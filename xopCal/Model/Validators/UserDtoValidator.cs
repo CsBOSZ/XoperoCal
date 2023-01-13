@@ -3,7 +3,7 @@ using xopCal.Entity;
 
 namespace xopCal.Model.Validators;
 
-public class UserDtoValidator : AbstractValidator<UserDto>
+public class UserDtoValidator : AbstractValidator<UserDtoIn>
 {
     public UserDtoValidator(EventDbContext dbContext)
     {

@@ -18,9 +18,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public ActionResult RegisterUser([FromBody]UserDto dto)
+    public ActionResult RegisterUser([FromBody]UserDtoIn dtoIn)
     {
-        _authService.RegisterUser(dto);
+        _authService.RegisterUser(dtoIn);
         return Ok();
     }
     

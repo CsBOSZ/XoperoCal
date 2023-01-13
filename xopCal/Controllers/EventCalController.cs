@@ -25,16 +25,16 @@ public class EventCalController : ControllerBase
 
     [HttpGet("{id}")]
     [AllowAnonymous]
-    public ActionResult<EventCal> GetEventCalById([FromRoute]int id)
+    public ActionResult<EventCalDtoOut> GetEventCalById([FromRoute]int id)
     {
         var e = _eventCalService.GetEventCalById(id);
         return e is null ? NotFound() : Ok(e);
     }
     
     [HttpGet("my")]
-    public ActionResult<List<EventCal>> GetAllEventCalByUserId()
+    public ActionResult<List<EventCalDtoOut>> GetAllEventCalByUserId()
     {
-        var le = new List<EventCal>(); 
+        var le = new List<EventCalDtoOut>(); 
         var c = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
         if (c is not null && int.TryParse(c.Value,out int result))
         {
@@ -43,9 +43,25 @@ public class EventCalController : ControllerBase
         return le.IsNullOrEmpty() ? NotFound() : Ok(le);
     }
     
+    [HttpGet("all")]
+    [AllowAnonymous]
+    public ActionResult<List<EventCalDtoOut>> GetAll()
+    {
+        var le = _eventCalService.GetAll();
+        return le.IsNullOrEmpty() ? NotFound() : Ok(le);
+    }
+    
+    [HttpGet("userId/{id}")]
+    [AllowAnonymous]
+    public ActionResult<List<EventCalDtoOut>> GetAllEventCalByUserId(int id)
+    {
+        var le = _eventCalService.GetAllEventCalByUserId(id);
+        return le.IsNullOrEmpty() ? NotFound() : Ok(le);
+    }
+
     [HttpGet("time")]
     [AllowAnonymous]
-    public ActionResult<List<EventCal>> GetAllEventCalByTime([FromBody]TimeDto dto)
+    public ActionResult<List<EventCalDtoOut>> GetAllEventCalByTime([FromBody]TimeDto dto)
     {
         var le = _eventCalService.GetAllEventCalByTime(dto);
         return le.IsNullOrEmpty() ? NotFound() : Ok(le);
@@ -53,30 +69,30 @@ public class EventCalController : ControllerBase
     
     [HttpGet("eventName/{name}")]
     [AllowAnonymous]
-    public ActionResult<List<EventCal>> GetAllEventCalByName([FromRoute]string name)
+    public ActionResult<List<EventCalDtoOut>> GetAllEventCalByName([FromRoute]string name)
     {
         var le = _eventCalService.GetAllEventCalByName(name);
         return le.IsNullOrEmpty() ? NotFound() : Ok(le);
     }
     
     [HttpPost]
-    public ActionResult PostEventCal([FromBody]EventCalDto dto)
+    public ActionResult PostEventCal([FromBody]EventCalDtoIn dtoIn)
     {
         var c = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
         if (c is not null && int.TryParse(c.Value,out int result))
         {
-            return _eventCalService.PostEventCal(dto, result) ? Ok() : BadRequest();
+            return _eventCalService.PostEventCal(dtoIn, result) ? Ok() : BadRequest();
         }
         return BadRequest();
     }
   
     [HttpPut]
-    public ActionResult PutEventCal([FromBody]EventCalDto dto)
+    public ActionResult PutEventCal([FromBody]EventCalDtoIn dtoIn)
     {
         var c = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
         if (c is not null && int.TryParse(c.Value,out int result))
         {
-            return _eventCalService.PutEventCal(dto, result) ? Ok() : BadRequest();
+            return _eventCalService.PutEventCal(dtoIn, result) ? Ok() : BadRequest();
         }
         return BadRequest();
     }

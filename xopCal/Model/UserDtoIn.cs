@@ -1,6 +1,6 @@
 namespace xopCal.Model;
 
-public class UserDto
+public class UserDtoIn
 {
         public string Email { get; set; }
         

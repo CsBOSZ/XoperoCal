@@ -32,16 +32,16 @@ public class AuthService : IAuthService
         _passwordHasher = passwordHasher;
     }
 
-    public void RegisterUser(UserDto dto)
+    public void RegisterUser(UserDtoIn dtoIn)
     {
         var user = new User()
         {
             
-            Name = dto.Name,
-            Email = dto.Email,
+            Name = dtoIn.Name,
+            Email = dtoIn.Email,
 
         };
-        var hasedPasword = _passwordHasher.HashPassword(user, dto.Password);
+        var hasedPasword = _passwordHasher.HashPassword(user, dtoIn.Password);
         user.PasswordHash = hasedPasword;
         _context.Users.Add(user);
         _context.SaveChanges();

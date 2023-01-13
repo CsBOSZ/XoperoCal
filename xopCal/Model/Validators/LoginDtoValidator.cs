@@ -5,7 +5,7 @@ namespace xopCal.Model.Validators;
 
 public class LoginDtoValidator : AbstractValidator<LoginDto>
 {
-    public LoginDtoValidator(EventDbContext dbContext)
+    public LoginDtoValidator()
     {
 
         RuleFor(x => x.Email)

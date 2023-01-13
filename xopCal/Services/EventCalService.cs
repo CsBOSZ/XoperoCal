@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using xopCal.Entity;
 using xopCal.Model;
@@ -8,66 +9,77 @@ namespace xopCal.Services;
 public class EventCalService : IEventCalService
 {
     private readonly EventDbContext _context;
-
-
-    public EventCalService(EventDbContext context)
+    private readonly IMapper _mapper;
+    public EventCalService(EventDbContext context,IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
-    public EventCal? GetEventCalById(int? id)
+    public EventCalDtoOut? GetEventCalById(int? id)
     {
         if (id is null)
         {
             return null;
         }
-        return _context.EventCals.FirstOrDefault(e => e.Id == id);
+        return _mapper.Map<EventCalDtoOut>(_context.EventCals.Include(e => e.Owner).FirstOrDefault(e => e.Id == id));
     }
     
-    public List<EventCal> GetAllEventCalByUserId(int userId)
+    public List<EventCalDtoOut> GetAllEventCalByUserId(int userId)
     {
-        return _context.EventCals.Where(e => e.OwnerId == userId).ToList();
+        var le = _context.EventCals.Where(e => e.OwnerId == userId).Include(e => e.Owner).ToList();
+        return _mapper.Map<List<EventCalDtoOut>>(le);
     }
     
-    public List<EventCal> GetAllEventCalByTime(TimeDto dto)
+    public List<EventCalDtoOut> GetAllEventCalByTime(TimeDto dto)
     {
+        List<EventCal> le;
         if (dto.EndEvent is null)
-        {
-            return _context.EventCals.Where(e => e.StartEvent <= dto.StartEvent && e.EndEvent <= dto.StartEvent).ToList();
+        { 
+            le = _context.EventCals.Where(e => e.StartEvent <= dto.StartEvent && e.EndEvent >= dto.StartEvent).Include(e => e.Owner).ToList();
         }
-
-        return _context.EventCals.Where(e => e.StartEvent >= dto.StartEvent && e.EndEvent >= dto.EndEvent).ToList();
-
-    }
-    
-    public List<EventCal> GetAllEventCalByName(string name)
-    {
-        return _context.EventCals.Where(e => e.Name == name).ToList();
-    }
-    
-    public bool PostEventCal(EventCalDto dto,int userId)
-    {
-        _context.EventCals.Add(new EventCal()
+        else
         {
-            Name = dto.Name ?? "none",
-            Description = dto.Description ?? "none",
-            StartEvent = dto.StartEvent ?? DateTime.Now,
-            EndEvent = dto.EndEvent ?? DateTime.Now.AddDays(1),
+            le = _context.EventCals.Where(e => e.StartEvent >= dto.StartEvent && e.EndEvent <= dto.EndEvent).Include(e => e.Owner).ToList();
+        }
+        return _mapper.Map<List<EventCalDtoOut>>(le);
+    }
+
+    public List<EventCalDtoOut> GetAll()
+    {
+        return _mapper.Map<List<EventCalDtoOut>>(_context.EventCals.Include(e=>e.Owner).ToList());
+    }
+
+    public List<EventCalDtoOut> GetAllEventCalByName(string name)
+    {
+        List<EventCal> le = _context.EventCals.Include(e => e.Owner).Where(e => e.Name.Contains(name) || e.Owner.Name.Contains(name)).ToList();
+        return _mapper.Map<List<EventCalDtoOut>>(le);
+    }
+    
+    public bool PostEventCal(EventCalDtoIn dtoIn,int userId)
+    {
+        var e = new EventCal()
+        {
+            Name = dtoIn.Name ?? "none",
+            Description = dtoIn.Description ?? "none",
+            StartEvent = dtoIn.StartEvent ?? DateTime.Now,
             OwnerId = userId,
-        });
+        };
+        e.EndEvent = dtoIn.EndEvent ?? e.StartEvent.AddDays(1);
+        _context.EventCals.Add(e);
         _context.SaveChanges();
         return true;
     }
     
-    public bool PutEventCal(EventCalDto dto,int userId)
+    public bool PutEventCal(EventCalDtoIn dtoIn,int userId)
     {
-        EventCal? e = GetEventCalById(dto.Id);
+        EventCal? e = _context.EventCals.FirstOrDefault(e => e.Id == dtoIn.Id);
         if (e is not null && e.OwnerId == userId)
         {
-            e.Name = dto.Name ?? e.Name;
-            e.Description = dto.Description ?? e.Description;
-            e.StartEvent = dto.StartEvent ?? e.StartEvent;
-            e.EndEvent = dto.EndEvent ?? e.EndEvent;
+            e.Name = dtoIn.Name ?? e.Name;
+            e.Description = dtoIn.Description ?? e.Description;
+            e.StartEvent = dtoIn.StartEvent ?? e.StartEvent;
+            e.EndEvent = dtoIn.EndEvent ?? e.EndEvent;
             _context.EventCals.Update(e);
             _context.SaveChanges();
             return true;
@@ -77,7 +89,7 @@ public class EventCalService : IEventCalService
     
     public bool DeleteEventCal(int id,int userId)
     {
-        var e = GetEventCalById(id);
+        var e = _context.EventCals.FirstOrDefault(e => e.Id == id);
         if (e is not null && e.OwnerId == userId)
         {
             _context.EventCals.Remove(e);

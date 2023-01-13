@@ -1,8 +1,6 @@
-using System.Text.Json.Serialization;
+namespace xopCal.Model;
 
-namespace xopCal.Entity;
-
-public class EventCal
+public class EventCalDtoOut
 {
     public int Id { get; set; }
     
@@ -13,7 +11,11 @@ public class EventCal
     public DateTime StartEvent { get; set; }
 
     public DateTime EndEvent { get; set; }
-    public virtual User Owner { get; set; }
+    
     public int OwnerId { get; set; }
+    
+    public string OwnerName { get; set; }
+    
+    public string OwnerEmail { get; set; }
     
 }

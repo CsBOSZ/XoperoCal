@@ -4,6 +4,6 @@ namespace xopCal.Services;
 
 public interface IAuthService
 {
-    void RegisterUser(UserDto dto);
+    void RegisterUser(UserDtoIn dtoIn);
     string GetJwt(LoginDto dto);
 }
