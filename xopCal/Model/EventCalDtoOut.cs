@@ -12,10 +12,14 @@ public class EventCalDtoOut
 
     public DateTime EndEvent { get; set; }
     
+    public string Color { get; set; }
+    
     public int OwnerId { get; set; }
     
     public string OwnerName { get; set; }
     
     public string OwnerEmail { get; set; }
+    
+    public List<UserDtoOut2> Subscribers { get; set; }
     
 }

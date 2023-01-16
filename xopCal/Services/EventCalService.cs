@@ -22,12 +22,12 @@ public class EventCalService : IEventCalService
         {
             return null;
         }
-        return _mapper.Map<EventCalDtoOut>(_context.EventCals.Include(e => e.Owner).FirstOrDefault(e => e.Id == id));
+        return _mapper.Map<EventCalDtoOut>(_context.EventCals.Include(e => e.Owner).Include(e => e.Subscribers).FirstOrDefault(e => e.Id == id));
     }
     
     public List<EventCalDtoOut> GetAllEventCalByUserId(int userId)
     {
-        var le = _context.EventCals.Where(e => e.OwnerId == userId).Include(e => e.Owner).ToList();
+        var le = _context.EventCals.Where(e => e.OwnerId == userId).Include(e => e.Owner).Include(e => e.Subscribers).ToList();
         return _mapper.Map<List<EventCalDtoOut>>(le);
     }
     
@@ -36,23 +36,23 @@ public class EventCalService : IEventCalService
         List<EventCal> le;
         if (dto.EndEvent is null)
         { 
-            le = _context.EventCals.Where(e => e.StartEvent <= dto.StartEvent && e.EndEvent >= dto.StartEvent).Include(e => e.Owner).ToList();
+            le = _context.EventCals.Where(e => e.StartEvent <= dto.StartEvent && e.EndEvent >= dto.StartEvent).Include(e => e.Owner).Include(e => e.Subscribers).ToList();
         }
         else
         {
-            le = _context.EventCals.Where(e => e.StartEvent >= dto.StartEvent && e.EndEvent <= dto.EndEvent).Include(e => e.Owner).ToList();
+            le = _context.EventCals.Where(e => e.StartEvent >= dto.StartEvent && e.EndEvent <= dto.EndEvent).Include(e => e.Owner).Include(e => e.Subscribers).ToList();
         }
         return _mapper.Map<List<EventCalDtoOut>>(le);
     }
 
     public List<EventCalDtoOut> GetAll()
     {
-        return _mapper.Map<List<EventCalDtoOut>>(_context.EventCals.Include(e=>e.Owner).ToList());
+        return _mapper.Map<List<EventCalDtoOut>>(_context.EventCals.Include(e=>e.Owner).Include(e => e.Subscribers).ToList());
     }
 
     public List<EventCalDtoOut> GetAllEventCalByName(string name)
     {
-        List<EventCal> le = _context.EventCals.Include(e => e.Owner).Where(e => e.Name.Contains(name) || e.Owner.Name.Contains(name)).ToList();
+        List<EventCal> le = _context.EventCals.Include(e => e.Owner).Where(e => e.Name.Contains(name) || e.Owner.Name.Contains(name)).Include(e => e.Subscribers).ToList();
         return _mapper.Map<List<EventCalDtoOut>>(le);
     }
     
@@ -63,6 +63,7 @@ public class EventCalService : IEventCalService
             Name = dtoIn.Name ?? "none",
             Description = dtoIn.Description ?? "none",
             StartEvent = dtoIn.StartEvent ?? DateTime.Now,
+            Color = dtoIn.Color ?? "ffffff",
             OwnerId = userId,
         };
         e.EndEvent = dtoIn.EndEvent ?? e.StartEvent.AddDays(1);
@@ -80,6 +81,7 @@ public class EventCalService : IEventCalService
             e.Description = dtoIn.Description ?? e.Description;
             e.StartEvent = dtoIn.StartEvent ?? e.StartEvent;
             e.EndEvent = dtoIn.EndEvent ?? e.EndEvent;
+            e.Color = dtoIn.Color ?? e.Color;
             _context.EventCals.Update(e);
             _context.SaveChanges();
             return true;

@@ -12,4 +12,6 @@ public class EventCalDtoOut2
 
     public DateTime EndEvent { get; set; }
     
+    public string Color { get; set; }
+    
 }

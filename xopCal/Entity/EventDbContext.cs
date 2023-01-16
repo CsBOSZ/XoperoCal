@@ -30,6 +30,9 @@ public class EventDbContext : DbContext
         {
             x.Property(r => r.Name)
                 .IsRequired();
+
+            x.HasMany(e => e.Subscribers)
+                .WithMany(u => u.SubscribeEventCals);
         });
     }
 

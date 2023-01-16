@@ -12,9 +12,10 @@ public class Mapper : Profile
                 c => c.MapFrom(s =>$"{s.Owner.Name}" ))
             .ForMember(e => e.OwnerEmail,
                 c => c.MapFrom(s =>$"{s.Owner.Email}"));
-
+        CreateMap<EventCal, EventCalDtoOut2>();
+        
         CreateMap<User, UserDtoOut>();
 
-        CreateMap<EventCal, EventCalDtoOut2>();
+        CreateMap<User, UserDtoOut2>();
     }
 }

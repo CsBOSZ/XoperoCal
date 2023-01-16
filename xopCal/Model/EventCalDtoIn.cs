@@ -11,4 +11,6 @@ public class EventCalDtoIn
     public DateTime? StartEvent { get; set; }
 
     public DateTime? EndEvent { get; set; }
+    
+    public string? Color { get; set; }
 }

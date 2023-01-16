@@ -39,6 +39,7 @@ public class AuthService : IAuthService
             
             Name = dtoIn.Name,
             Email = dtoIn.Email,
+            Color = dtoIn.Color
 
         };
         var hasedPasword = _passwordHasher.HashPassword(user, dtoIn.Password);
