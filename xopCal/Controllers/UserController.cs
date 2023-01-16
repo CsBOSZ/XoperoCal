@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using xopCal.Entity;
@@ -8,6 +9,7 @@ using xopCal.Services;
 
 namespace xopCal.Controllers;
 
+[EnableCors("MyPolicy")]
 [Route("User")]
 [ApiController]
 public class UserController : ControllerBase

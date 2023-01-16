@@ -15,6 +15,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddCors(o => o.AddPolicy("MyPolicy", corsPolicyBuilder =>
+{
+    corsPolicyBuilder.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+}));
+
 var authSetting = new AuthenticationSettings()
 {
     
@@ -80,6 +87,8 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 
 app.UseHttpsRedirection();
+
+app.UseCors("MyPolicy");
 
 app.UseAuthorization();
 

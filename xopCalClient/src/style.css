@@ -1,0 +1,25 @@
+:root {
+  --color1: #3a2e39;
+  --color2: #d67ab1;
+  --color3: #e2a3c7;
+  --color4: #fdf7fa;
+  --color5: #a8dcd9;
+
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+ background-color: var(--color4);
+}
+
+
+
+
+
+
+

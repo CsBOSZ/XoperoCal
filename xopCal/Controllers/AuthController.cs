@@ -1,11 +1,13 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using xopCal.Model;
 using xopCal.Services;
 
 namespace xopCal.Controllers;
 
+[EnableCors("MyPolicy")]
 [Route("Auth")]
 [ApiController]
 public class AuthController : ControllerBase
