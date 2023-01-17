@@ -9,6 +9,7 @@ const { ht } = storeToRefs(user);
 
 const email = ref(null);
 const name = ref(null);
+const color = ref(null);
 const password = ref(null);
 const passwordC = ref(null);
 const stringNotification = ref(null);
@@ -23,6 +24,7 @@ const register = () => {
     name: name.value,
     password: password.value,
     confirmPassword: passwordC.value,
+    color: color.value
   });
 
   let requestOptions = {
@@ -34,9 +36,7 @@ const register = () => {
 
   fetch(ht.value+"/Auth/register", requestOptions)
     .then((response) => {
-      if (Math.floor(+response.status / 100) != 2) {
-        showNotification.value = true;
-      }
+      showNotification.value = (Math.floor(+response.status / 100) != 2); 
       return response.json();
     })
     .then((result) => {
@@ -54,6 +54,7 @@ const register = () => {
     <h3>REGISTER</h3>
     <input type="email" id="email" placeholder="user email" v-model="email" />
     <input type="text" id="name" placeholder="user name" v-model="name" />
+    <input type="color" id="color" v-model="color"/>
     <input
       type="password"
       id="password"

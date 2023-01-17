@@ -13,4 +13,6 @@ public interface IEventCalService
     bool PostEventCal(EventCalDtoIn dtoIn,int userId);
     bool PutEventCal(EventCalDtoIn dtoIn,int userId);
     bool DeleteEventCal(int id,int userId);
+
+    bool Subscribe(int id, int userId);
 }

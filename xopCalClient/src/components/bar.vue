@@ -7,7 +7,7 @@ import { useUserStore } from "../store/user";
 import { storeToRefs } from "pinia";
 
 const user = useUserStore();
-const { jwt } = storeToRefs(user);
+const { jwt , id } = storeToRefs(user);
 
 const show = ref(true);
 </script>
@@ -18,7 +18,7 @@ const show = ref(true);
       <span class="material-symbols-outlined"> menu_open </span>
     </span>
 
-    <userStatus v-if="jwt != null && jwt != ''" />
+    <userStatus v-if="jwt != null && jwt != '' && id != null" />
     <span class="rl" v-else>
       <register />
       <login />

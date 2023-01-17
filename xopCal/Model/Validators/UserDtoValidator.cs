@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using FluentValidation;
 using xopCal.Entity;
 
@@ -29,7 +30,15 @@ public class UserDtoValidator : AbstractValidator<UserDtoIn>
                 }
             );
 
-        RuleFor(x => x.Color).Length(6);
+        RuleFor(x => x.Color)  
+            .Custom((value, context) =>
+            {
+                if(!Regex.IsMatch(value,"^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"))
+                {
+                    context.AddFailure("Color","Color is not a color");
+                }
+            }
+        );
 
         // "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
 

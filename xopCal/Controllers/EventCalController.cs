@@ -109,4 +109,15 @@ public class EventCalController : ControllerBase
         return BadRequest();
     }
     
+    [HttpPut("Subscribe/{id}")]
+    public ActionResult Subscribe([FromRoute]int id)
+    {
+        var c = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+        if (c is not null && int.TryParse(c.Value,out int result))
+        {
+            return _eventCalService.Subscribe(id, result) ? Ok() : BadRequest();
+        }
+        return BadRequest();
+    }
+    
 }

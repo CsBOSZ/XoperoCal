@@ -1,12 +1,13 @@
 <script setup>
-import notification from './components/modules/notification.vue';
-import bar from './components/bar.vue';
-import { storeToRefs } from 'pinia';
-import { useUserStore } from './store/user';
+import notification from "./components/modules/notification.vue";
+import bar from "./components/bar.vue";
+import topBar from "./components/topBar.vue";
+import { storeToRefs } from "pinia";
+import { useUserStore } from "./store/user";
 
 const user = useUserStore();
 
-const { showNotificationG , stringNotificationG } = storeToRefs(user);
+const { showNotificationG, stringNotificationG, jwt, id } = storeToRefs(user);
 
 function getDaysInMonth(month, year) {
   var date = new Date(year, month, 1);
@@ -17,21 +18,32 @@ function getDaysInMonth(month, year) {
   }
   return days;
 }
-
 </script>
 
 <template>
-<teleport to='body' >
-  <notification :not="stringNotificationG" :show="showNotificationG"/>
-</teleport>
-
-
- <bar/>
-
+  <main class="ma">
+    <teleport to="body">
+      <notification :not="stringNotificationG" :show="showNotificationG" />
+    </teleport>
+   <topBar/>
+    <bar />
+ 
+  </main>
 </template>
 
 <style scoped>
 
+main.ma{
+
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+}
 
 
 </style>

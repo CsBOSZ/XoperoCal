@@ -101,5 +101,20 @@ public class EventCalService : IEventCalService
         return false;
     }
 
+    public bool Subscribe(int id,int userId)
+    {
+        var e = _context.EventCals.Include(e => e.Subscribers).FirstOrDefault(e => e.Id == id);
+        var u = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+        if (e is not null && u is not null && e.OwnerId != userId)
+        {
+            e.Subscribers.Add(u);
+            _context.EventCals.Update(e);
+            _context.SaveChanges();
+            return true;
+        }
+        return false;
+        
+    }
 
 }

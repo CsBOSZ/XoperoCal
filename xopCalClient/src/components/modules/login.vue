@@ -11,7 +11,7 @@ const email = ref(null);
 const password = ref(null);
 
 const loginin = () =>{
-    login(email.value,password.value)
+   login(email.value,password.value)
 }
 
 </script>

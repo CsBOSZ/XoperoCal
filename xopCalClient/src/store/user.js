@@ -6,13 +6,14 @@ export const useUserStore = defineStore("user", {
     id: null,
     email: null,
     name: null,
+    color: null,
     stringNotificationG: null,
     showNotificationG: false,
     ht: "http://localhost:5240",
   }),
   getters: {},
   actions: {
-    login(EMAIL, PASSWORD) {
+    async login(EMAIL, PASSWORD) {
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       myHeaders.append("Accept", "text/plain");
@@ -29,36 +30,34 @@ export const useUserStore = defineStore("user", {
         redirect: "follow",
       };
 
-      fetch(this.ht + "/Auth/login", requestOptions)
+      await fetch(this.ht + "/Auth/login", requestOptions)
         .then((response) => {
-          if (Math.floor(+response.status / 100) != 2) {
-            this.showNotificationG = true;
-          } else {
-            this.showNotificationG = false;
-          }
+          this.showNotificationG = (Math.floor(+response.status / 100) != 2) 
           return response.text();
         })
         .then((result) => {
           this.stringNotificationG = result;
+         }
+        )
+        .catch((error) => console.log("error", error));
 
-          if (!this.showNotificationG) {
-            this.jwt = result;
+         
+
+        if (!this.showNotificationG) {
+            this.jwt = this.stringNotificationG;
             var myHeaders2 = new Headers();
             myHeaders2.append("Content-Type", "application/json");
             myHeaders2.append("Accept", "text/plain");
-            myHeaders2.append("Authorization", "Bearer " + result);
+            myHeaders2.append("Authorization", "Bearer " + this.jwt);
 
             var requestOptions = {
               method: "GET",
               headers: myHeaders2,
               redirect: "follow",
             };
-
-            fetch(this.ht + "/User/false/my", requestOptions)
+        await fetch(this.ht + "/User/false/my", requestOptions)
               .then((response) => {
-                if (Math.floor(+response.status / 100) != 2) {
-                  this.showNotificationG = true;
-                }
+                this.showNotificationG = (Math.floor(+response.status / 100) != 2) 
                 return response.json();
               })
               .then((result) => {
@@ -66,11 +65,11 @@ export const useUserStore = defineStore("user", {
                 this.id = +result.id;
                 this.email = result.email;
                 this.name = result.name;
+                this.color = result.color;
               })
               .catch((error) => console.log("error", error));
           }
-        })
-        .catch((error) => console.log("error", error));
+
     },
   },
 });

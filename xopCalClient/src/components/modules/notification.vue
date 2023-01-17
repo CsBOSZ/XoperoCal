@@ -29,6 +29,7 @@ defineProps({
   height: 100%;
   background-color: #00000000;
   backdrop-filter:  brightness(60%);
+  z-index: 20;
 
 }
 
