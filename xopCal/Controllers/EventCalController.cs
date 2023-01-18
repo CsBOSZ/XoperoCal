@@ -2,8 +2,10 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using xopCal.Entity;
+using xopCal.Hubs;
 using xopCal.Model;
 using xopCal.Services;
 
@@ -17,7 +19,7 @@ public class EventCalController : ControllerBase
 {
 
     private readonly IEventCalService _eventCalService;
-    
+
     // public ActionResult
     public EventCalController(IEventCalService eventCalService)
     {

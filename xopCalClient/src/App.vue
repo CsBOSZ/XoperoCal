@@ -4,10 +4,11 @@ import bar from "./components/bar.vue";
 import topBar from "./components/topBar.vue";
 import { storeToRefs } from "pinia";
 import { useUserStore } from "./store/user";
+import { watch } from "vue";
 
 const user = useUserStore();
 
-const { showNotificationG, stringNotificationG, jwt, id } = storeToRefs(user);
+const { showNotificationG, stringNotificationG, jwt, id , ht} = storeToRefs(user);
 
 function getDaysInMonth(month, year) {
   var date = new Date(year, month, 1);
@@ -18,6 +19,35 @@ function getDaysInMonth(month, year) {
   }
   return days;
 }
+// watch(jwt, (newjwt , oldjwt) => {
+ 
+// })
+
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl(ht.value + "/EventHub")
+    .build();
+
+async function start() {
+    try {
+        await connection.start();
+        console.log("SignalR Connected.");
+    } catch (err) {
+        console.log(err);
+        setTimeout(start, 5000);
+    }
+};
+
+connection.onclose(async () => {
+    await start();
+});
+
+// Start the connection.
+start();
+
+connection.on("test", () => {
+   console.log("test")
+});
+
 </script>
 
 <template>

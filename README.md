@@ -16,3 +16,10 @@ npm install
 npm run dev
 
 ```
+
+server Run:
+
+>xopCal/Entity/EventDbContext.cs line-7
+>```csharp
+>    private string _connectionString = "Host=172.17.0.2;Database=cal;Username=postgres;Password=r";
+>```

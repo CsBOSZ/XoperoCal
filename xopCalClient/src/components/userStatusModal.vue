@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import modal from "./modules/modal.vue";
 import notification from "./modules/notification.vue";
+import eventItem from "./modules/eventItem.vue";
 import { useUserStore } from "../store/user";
 import { storeToRefs } from "pinia";
 
@@ -53,7 +54,7 @@ fetch(ht.value + "/User/true/" + props.userId, requestOptions, requestOptions)
     })
   .then(result => {
       if (!showNotification.value) {
-        console.log(result.name);
+
         name.value = result.name;
         email.value = result.email;
         color.value = result.color;
@@ -78,7 +79,22 @@ userfetch();
       }}</span>
       <h4>{{ email }}</h4>
       <h2>ID:{{ userId }}</h2>
+      <span class="lists">
+
+      <div class="list" >
+
+        <eventItem v-for="item in eventCals" :key="item.id" :event-color="item.color" :event-id="item.id" :event-start="item.startEvent" :event-end="item.endEvent" :event-name="item.name" :event-description="item.description" :event-delete="true"/>
+      
+      </div>
+      <div class="list">
+
+        <eventItem v-for="item in subscribeEventCals" :key="item.id" :event-color="item.color" :event-id="item.id" :event-start="item.startEvent" :event-end="item.endEvent" :event-name="item.name" :event-description="item.description" :event-delete="false"/>
+
+      </div>
+
+    </span>
     </div>
+    
   </modal>
 </template>
 
@@ -114,4 +130,24 @@ userfetch();
   border-radius: 50px;
   font-weight: 900;
 }
+
+span.lists{
+  width: 95%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+div.list{
+
+  width: 50%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+}
+
 </style>

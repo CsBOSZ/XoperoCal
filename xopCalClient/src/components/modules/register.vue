@@ -41,8 +41,8 @@ const register = () => {
     })
     .then((result) => {
         stringNotification.value = result;
-    });
-  // .catch((error) => {stringNotification.value = error; showNotification.value = true;});
+    })
+   .catch((error) => {stringNotification.value = error; showNotification.value = true;});
 };
 </script>
 

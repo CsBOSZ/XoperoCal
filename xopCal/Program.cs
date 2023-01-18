@@ -1,10 +1,12 @@
 using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using xopCal;
 using xopCal.Entity;
+using xopCal.Hubs;
 using xopCal.Model;
 using xopCal.Model.Validators;
 using xopCal.Services;
@@ -15,12 +17,25 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddCors(o => o.AddPolicy("MyPolicy", corsPolicyBuilder =>
+builder.Services.AddCors(o =>
 {
-    corsPolicyBuilder.AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader();
-}));
+    o.AddPolicy("MyPolicy", corsPolicyBuilder =>
+    {
+        corsPolicyBuilder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+    
+    o.AddDefaultPolicy(
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+
+});
 
 var authSetting = new AuthenticationSettings()
 {
@@ -74,6 +89,7 @@ builder.Services.AddScoped<IValidator<TimeDto>, TimeDtoValidator>();
 builder.Services.AddScoped<IValidator<EventCalDtoIn>, EventCalDtoValidator>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -88,10 +104,13 @@ app.UseAuthentication();
 
 app.UseHttpsRedirection();
 
-app.UseCors("MyPolicy");
+// app.UseCors("MyPolicy");
+app.UseCors();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<EventHub>("/EventHub");
 
 app.Run();

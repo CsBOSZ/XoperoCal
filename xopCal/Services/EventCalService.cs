@@ -63,10 +63,12 @@ public class EventCalService : IEventCalService
             Name = dtoIn.Name ?? "none",
             Description = dtoIn.Description ?? "none",
             StartEvent = dtoIn.StartEvent ?? DateTime.Now,
-            Color = dtoIn.Color ?? "ffffff",
+            Color = dtoIn.Color ?? "#ffffff",
             OwnerId = userId,
         };
         e.EndEvent = dtoIn.EndEvent ?? e.StartEvent.AddDays(1);
+        e.StartEvent = e.StartEvent.ToUniversalTime();
+        e.EndEvent = e.EndEvent.ToUniversalTime();
         _context.EventCals.Add(e);
         _context.SaveChanges();
         return true;
@@ -82,6 +84,8 @@ public class EventCalService : IEventCalService
             e.StartEvent = dtoIn.StartEvent ?? e.StartEvent;
             e.EndEvent = dtoIn.EndEvent ?? e.EndEvent;
             e.Color = dtoIn.Color ?? e.Color;
+            e.StartEvent = e.StartEvent.ToUniversalTime();
+            e.EndEvent = e.EndEvent.ToUniversalTime();
             _context.EventCals.Update(e);
             _context.SaveChanges();
             return true;
