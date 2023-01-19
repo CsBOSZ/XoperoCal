@@ -40,7 +40,7 @@ public class EventCalController : ControllerBase
         var c = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
         if (c is not null && int.TryParse(c.Value,out int result))
         {
-             return _eventCalService.GetStatus(result);
+             return _eventCalService.GetStatus(id,result);
         }
 
         return 3;

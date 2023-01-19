@@ -18,7 +18,7 @@ const sendEvent = () => {
 <template>
   <teleport to="body">
     <div class="modal" v-if="show" :style="{'z-index':z}">
-      <span @click="sendEvent" class="material-symbols-outlined"> cancel_presentation </span>
+      <span @click="sendEvent" class="material-symbols-outlined" :style="{'z-index':(z + 1)}"> cancel_presentation </span>
        <slot></slot>
     </div>
   </teleport>

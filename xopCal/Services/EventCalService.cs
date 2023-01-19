@@ -29,11 +29,11 @@ public class EventCalService : IEventCalService
         return _mapper.Map<EventCalDtoOut>(_context.EventCals.Include(e => e.Owner).Include(e => e.Subscribers).FirstOrDefault(e => e.Id == id));
     }
     
-    public int GetStatus(int id)
+    public int GetStatus(int id,int userId)
     {
         var e = _context.EventCals.Include(e => e.Subscribers).FirstOrDefault(e => e.Id == id);
-        if (e != null && e.OwnerId == id) return 1;
-        if (e != null && e.Subscribers.Exists(u => u.Id == id)) return 2;
+        if (e != null && e.OwnerId == userId) return 1;
+        if (e != null && e.Subscribers.Exists(u => u.Id == userId)) return 2;
         return 3;
     }
     
@@ -130,7 +130,7 @@ public class EventCalService : IEventCalService
             e.Subscribers.Add(u);
             _context.EventCals.Update(e);
             _context.SaveChanges();
-            _hub.Clients.Users(new []{$"{e.OwnerId}",$"{u.Id}"}).SendAsync("Subscribe");
+            _hub.Clients.Users(new []{$"{e.OwnerId}",$"{u.Id}"}).SendAsync("Subscribe",e.Name,u.Name);
             return true;
         }
         return false;
@@ -147,7 +147,7 @@ public class EventCalService : IEventCalService
             e.Subscribers.Remove(u);
             _context.EventCals.Update(e);
             _context.SaveChanges();
-            _hub.Clients.Users(new []{$"{e.OwnerId}",$"{u.Id}"}).SendAsync("UnSubscribe");
+            _hub.Clients.Users(new []{$"{e.OwnerId}",$"{u.Id}"}).SendAsync("UnSubscribe",e.Name,u.Name);
             return true;
         }
         return false;

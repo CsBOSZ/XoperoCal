@@ -70,7 +70,7 @@ userfetch();
 </script>
 
 <template>
-  <modal :show="show" @close-modal="sendEvent">
+  <modal :show="show" :z="z" @close-modal="sendEvent">
     <notification not="id error" :show="showNotification" />
     <div class="user" @click="show = true">
       <h3>{{ name }}</h3>
@@ -83,12 +83,12 @@ userfetch();
 
       <div class="list" >
 
-        <eventItem v-for="item in eventCals" :key="item.id" :event-color="item.color" :event-id="item.id" :event-start="item.startEvent" :event-end="item.endEvent" :event-name="item.name" :event-description="item.description" :event-delete="true"/>
+        <eventItem v-for="item in eventCals" :key="item.id" :event-z="(z+1)" :event-color="item.color" :event-id="item.id" :event-start="item.startEvent"  :event-name="item.name" />
       
       </div>
       <div class="list">
 
-        <eventItem v-for="item in subscribeEventCals" :key="item.id" :event-color="item.color" :event-id="item.id" :event-start="item.startEvent" :event-end="item.endEvent" :event-name="item.name" :event-description="item.description" :event-delete="false"/>
+        <eventItem v-for="item in subscribeEventCals" :key="item.id" :event-z="(z+1)" :event-color="item.color" :event-id="item.id" :event-start="item.startEvent"  :event-name="item.name" />
 
       </div>
 

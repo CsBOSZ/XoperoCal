@@ -6,7 +6,7 @@ namespace xopCal.Services;
 public interface IEventCalService
 {
     EventCalDtoOut? GetEventCalById(int? id);
-    int GetStatus(int id);
+    int GetStatus(int id,int userId);
     List<EventCalDtoOut> GetAllEventCalByUserId(int userId);
     List<EventCalDtoOut> GetAllEventCalByName(string name);
     List<EventCalDtoOut> GetAllEventCalByTime(TimeDto dto);

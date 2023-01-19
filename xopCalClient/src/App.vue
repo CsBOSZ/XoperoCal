@@ -2,6 +2,7 @@
 import notification from "./components/modules/notification.vue";
 import bar from "./components/bar.vue";
 import topBar from "./components/topBar.vue";
+import cal from "./components/cal.vue";
 import { storeToRefs } from "pinia";
 import { useUserStore } from "./store/user";
 import { watch } from "vue";
@@ -46,10 +47,18 @@ connection.onclose(async () => {
 // Start the connection.
 start();
 
-connection.on("test", (arg) => {
-  console.log("test",arg);
+connection.on("newevent", () => {
+  console.log("newevent");
+  alert("newevent")
 });
-
+connection.on("Subscribe", (en,un) => {
+  console.log("Subscribe event-name:"+en+" user-name:"+un);
+  alert("Subscribe event-name:"+en+" user-name:"+un)
+});
+connection.on("UnSubscribe", (en,un) => {
+  console.log("UnSubscribe event-name:"+en+" user-name:"+un);
+  alert("UnSubscribe event-name:"+en+" user-name:"+un)
+});
 
 })
 
@@ -62,6 +71,7 @@ connection.on("test", (arg) => {
       <notification :not="stringNotificationG" :show="showNotificationG" />
     </teleport>
     <topBar />
+    <cal />
     <bar />
   </main>
 </template>
