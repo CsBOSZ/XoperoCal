@@ -8,7 +8,8 @@ import { watch } from "vue";
 
 const user = useUserStore();
 
-const { showNotificationG, stringNotificationG, jwt, id , ht} = storeToRefs(user);
+const { showNotificationG, stringNotificationG, jwt, id, ht } =
+  storeToRefs(user);
 
 function getDaysInMonth(month, year) {
   var date = new Date(year, month, 1);
@@ -20,34 +21,38 @@ function getDaysInMonth(month, year) {
   return days;
 }
 // watch(jwt, (newjwt , oldjwt) => {
- 
+
 // })
 
+// "Authorization", "Bearer " + jwt.value
+
 const connection = new signalR.HubConnectionBuilder()
-    .withUrl(ht.value + "/EventHub")
-    .build();
+  .withUrl(ht.value + "/EventHub", options =>
+    { 
+        options.AccessTokenProvider = () => Task.FromResult("Bearer " + jwt.value);
+    })
+  .build();
 
 async function start() {
-    try {
-        await connection.start();
-        console.log("SignalR Connected.");
-    } catch (err) {
-        console.log(err);
-        setTimeout(start, 5000);
-    }
-};
+  try {
+    await connection.start();
+    console.log("SignalR Connected.");
+  } catch (err) {
+    console.log(err);
+    setTimeout(start, 5000);
+  }
+}
 
 connection.onclose(async () => {
-    await start();
+  await start();
 });
 
 // Start the connection.
 start();
 
 connection.on("test", () => {
-   console.log("test")
+  console.log("test");
 });
-
 </script>
 
 <template>
@@ -55,16 +60,13 @@ connection.on("test", () => {
     <teleport to="body">
       <notification :not="stringNotificationG" :show="showNotificationG" />
     </teleport>
-   <topBar/>
+    <topBar />
     <bar />
- 
   </main>
 </template>
 
 <style scoped>
-
-main.ma{
-
+main.ma {
   height: 100%;
   width: 100%;
 
@@ -72,8 +74,5 @@ main.ma{
   justify-content: center;
   align-items: center;
   flex-direction: column;
-
 }
-
-
 </style>

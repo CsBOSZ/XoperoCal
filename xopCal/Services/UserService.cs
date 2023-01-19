@@ -9,7 +9,16 @@ public class UserService : IUserService
 {
     private readonly EventDbContext _context;
     private readonly IMapper _mapper;
+    private static Dictionary<int, string> _connect = new Dictionary<int, string>();
 
+    public void AddConnectUser(int id, string connectId)
+    {
+        _connect.Add(id,connectId);
+    }
+    public void DeleteConnectUser(int id)
+    {
+        _connect.Remove(id);
+    }
     public UserService(EventDbContext context, IMapper mapper)
     {
         _context = context;
