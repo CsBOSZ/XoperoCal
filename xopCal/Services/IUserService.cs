@@ -5,8 +5,6 @@ namespace xopCal.Services;
 
 public interface IUserService
 {
-    public void AddConnectUser(int id, string connectId);
-    public void DeleteConnectUser(int id);
     UserDtoOut? GetUserById(int? id,bool events);
     UserDtoOut? GetUserByEmail(string email,bool events);
     List<UserDtoOut> GetAllUserByName(string name,bool events);

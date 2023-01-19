@@ -19,7 +19,6 @@ public class EventCalController : ControllerBase
 {
 
     private readonly IEventCalService _eventCalService;
-
     // public ActionResult
     public EventCalController(IEventCalService eventCalService)
     {
@@ -32,6 +31,19 @@ public class EventCalController : ControllerBase
     {
         var e = _eventCalService.GetEventCalById(id);
         return e is null ? NotFound() : Ok(e);
+    }
+    
+    [HttpGet("Status/{id}")]
+  
+    public int GetStatus([FromRoute]int id)
+    {
+        var c = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+        if (c is not null && int.TryParse(c.Value,out int result))
+        {
+             return _eventCalService.GetStatus(result);
+        }
+
+        return 3;
     }
     
     [HttpGet("my")]
@@ -118,6 +130,17 @@ public class EventCalController : ControllerBase
         if (c is not null && int.TryParse(c.Value,out int result))
         {
             return _eventCalService.Subscribe(id, result) ? Ok() : BadRequest();
+        }
+        return BadRequest();
+    }
+    
+    [HttpPut("UnSubscribe/{id}")]
+    public ActionResult UnSubscribe([FromRoute]int id)
+    {
+        var c = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+        if (c is not null && int.TryParse(c.Value,out int result))
+        {
+            return _eventCalService.UnSubscribe(id, result) ? Ok() : BadRequest();
         }
         return BadRequest();
     }

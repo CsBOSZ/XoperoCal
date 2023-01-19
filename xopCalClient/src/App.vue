@@ -20,18 +20,14 @@ function getDaysInMonth(month, year) {
   }
   return days;
 }
-// watch(jwt, (newjwt , oldjwt) => {
-
-// })
+watch(jwt, (newjwt , oldjwt) => {
 
 // "Authorization", "Bearer " + jwt.value
 
 const connection = new signalR.HubConnectionBuilder()
-  .withUrl(ht.value + "/EventHub", options =>
-    { 
-        options.AccessTokenProvider = () => Task.FromResult("Bearer " + jwt.value);
-    })
+  .withUrl(ht.value + "/EventHub", { accessTokenFactory: () => newjwt})
   .build();
+
 
 async function start() {
   try {
@@ -50,9 +46,14 @@ connection.onclose(async () => {
 // Start the connection.
 start();
 
-connection.on("test", () => {
-  console.log("test");
+connection.on("test", (arg) => {
+  console.log("test",arg);
 });
+
+
+})
+
+
 </script>
 
 <template>

@@ -1,6 +1,8 @@
 using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using xopCal.Entity;
+using xopCal.Hubs;
 using xopCal.Model;
 
 namespace xopCal.Services;
@@ -10,10 +12,12 @@ public class EventCalService : IEventCalService
 {
     private readonly EventDbContext _context;
     private readonly IMapper _mapper;
-    public EventCalService(EventDbContext context,IMapper mapper)
+    private readonly IHubContext<EventHub> _hub;
+    public EventCalService(EventDbContext context,IMapper mapper, IHubContext<EventHub> hub)
     {
         _context = context;
         _mapper = mapper;
+        _hub = hub;
     }
 
     public EventCalDtoOut? GetEventCalById(int? id)
@@ -23,6 +27,14 @@ public class EventCalService : IEventCalService
             return null;
         }
         return _mapper.Map<EventCalDtoOut>(_context.EventCals.Include(e => e.Owner).Include(e => e.Subscribers).FirstOrDefault(e => e.Id == id));
+    }
+    
+    public int GetStatus(int id)
+    {
+        var e = _context.EventCals.Include(e => e.Subscribers).FirstOrDefault(e => e.Id == id);
+        if (e != null && e.OwnerId == id) return 1;
+        if (e != null && e.Subscribers.Exists(u => u.Id == id)) return 2;
+        return 3;
     }
     
     public List<EventCalDtoOut> GetAllEventCalByUserId(int userId)
@@ -71,6 +83,7 @@ public class EventCalService : IEventCalService
         e.EndEvent = e.EndEvent.ToUniversalTime();
         _context.EventCals.Add(e);
         _context.SaveChanges();
+        _hub.Clients.All.SendAsync("newevent");
         return true;
     }
     
@@ -88,6 +101,7 @@ public class EventCalService : IEventCalService
             e.EndEvent = e.EndEvent.ToUniversalTime();
             _context.EventCals.Update(e);
             _context.SaveChanges();
+            _hub.Clients.All.SendAsync("newevent");
             return true;
         }
         return false;
@@ -100,6 +114,7 @@ public class EventCalService : IEventCalService
         {
             _context.EventCals.Remove(e);
             _context.SaveChanges();
+            _hub.Clients.All.SendAsync("newevent");
             return true;
         }
         return false;
@@ -110,11 +125,29 @@ public class EventCalService : IEventCalService
         var e = _context.EventCals.Include(e => e.Subscribers).FirstOrDefault(e => e.Id == id);
         var u = _context.Users.FirstOrDefault(u => u.Id == userId);
 
-        if (e is not null && u is not null && e.OwnerId != userId)
+        if (e is not null && u is not null && e.OwnerId != userId && !e.Subscribers.Contains(u))
         {
             e.Subscribers.Add(u);
             _context.EventCals.Update(e);
             _context.SaveChanges();
+            _hub.Clients.Users(new []{$"{e.OwnerId}",$"{u.Id}"}).SendAsync("Subscribe");
+            return true;
+        }
+        return false;
+        
+    }
+    
+    public bool UnSubscribe(int id,int userId)
+    {
+        var e = _context.EventCals.Include(e => e.Subscribers).FirstOrDefault(e => e.Id == id);
+        var u = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+        if (e is not null && u is not null && e.OwnerId != userId && e.Subscribers.Contains(u))
+        {
+            e.Subscribers.Remove(u);
+            _context.EventCals.Update(e);
+            _context.SaveChanges();
+            _hub.Clients.Users(new []{$"{e.OwnerId}",$"{u.Id}"}).SendAsync("UnSubscribe");
             return true;
         }
         return false;

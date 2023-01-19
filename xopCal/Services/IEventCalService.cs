@@ -6,6 +6,7 @@ namespace xopCal.Services;
 public interface IEventCalService
 {
     EventCalDtoOut? GetEventCalById(int? id);
+    int GetStatus(int id);
     List<EventCalDtoOut> GetAllEventCalByUserId(int userId);
     List<EventCalDtoOut> GetAllEventCalByName(string name);
     List<EventCalDtoOut> GetAllEventCalByTime(TimeDto dto);
@@ -13,6 +14,6 @@ public interface IEventCalService
     bool PostEventCal(EventCalDtoIn dtoIn,int userId);
     bool PutEventCal(EventCalDtoIn dtoIn,int userId);
     bool DeleteEventCal(int id,int userId);
-
     bool Subscribe(int id, int userId);
+    public bool UnSubscribe(int id, int userId);
 }

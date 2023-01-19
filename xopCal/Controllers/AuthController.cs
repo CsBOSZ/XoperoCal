@@ -15,12 +15,12 @@ namespace xopCal.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
-    private readonly IHubContext<EventHub> _hub;
+   
 
-    public AuthController(IAuthService authService, IHubContext<EventHub> hub)
+    public AuthController(IAuthService authService)
     {
         _authService = authService;
-        _hub = hub;
+        
     }
 
     [HttpPost("register")]
@@ -33,7 +33,6 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public ActionResult<string> Login([FromBody]LoginDto dto)
     {
-        _hub.Clients.All.SendAsync("test");
         var token = _authService.GetJwt(dto);
         return token.StartsWith("error") ? NotFound(token) : Ok(token);
     }
