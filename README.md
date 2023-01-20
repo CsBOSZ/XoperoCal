@@ -1,7 +1,6 @@
 # XoperoCal
 
--[ ] Wyświetlanie/dodawanie/edytowanie/usuwanie alarmów/zdarzeń do wbudowanego kalendarza
-- [ ] edytowanie
+-[X] Wyświetlanie/dodawanie/edytowanie/usuwanie alarmów/zdarzeń do wbudowanego kalendarza
 -[X] Wyszukiwanie zdarzeń po nazwie bądź okresie czasu
 -[x] Eksportowanie wybranych zdarzeń
 -[x] Importowanie zdarzeń z pliku
