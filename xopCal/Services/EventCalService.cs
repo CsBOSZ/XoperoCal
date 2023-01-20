@@ -45,6 +45,10 @@ public class EventCalService : IEventCalService
     
     public List<EventCalDtoOut> GetAllEventCalByTime(TimeDto dto)
     {
+        dto.StartEvent = dto.StartEvent.ToUniversalTime();
+        
+      
+        
         List<EventCal> le;
         if (dto.EndEvent is null)
         { 
@@ -52,6 +56,7 @@ public class EventCalService : IEventCalService
         }
         else
         {
+            dto.EndEvent = dto.EndEvent.Value.ToUniversalTime();
             le = _context.EventCals.Where(e => e.StartEvent >= dto.StartEvent && e.EndEvent <= dto.EndEvent).Include(e => e.Owner).Include(e => e.Subscribers).ToList();
         }
         return _mapper.Map<List<EventCalDtoOut>>(le);

@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using xopCal;
 using xopCal.Entity;
@@ -37,15 +38,18 @@ builder.Services.AddCors(o =>
 
 });
 
-var authSetting = new AuthenticationSettings()
-{
-    
-    JwtKey= "PRIVATE_KEY_DONT_SHARE",
-    JwtExpireDays= 15,
-    JwtIssuer= "http://eventcalapi.com"
-    
-};
+var authSetting = new AuthenticationSettings();
+// {
+//     
+//     JwtKey= "PRIVATE_KEY_DONT_SHARE",
+//     JwtExpireDays= 15,
+//     JwtIssuer= "http://eventcalapi.com"
+//     
+// };
 
+builder.Configuration.GetSection("Authentication").Bind(authSetting);
+
+builder.Services.AddSingleton(authSetting);
 builder.Services.AddAuthentication(o =>
 {
     o.DefaultAuthenticateScheme = "Bearer";
@@ -75,7 +79,13 @@ builder.Services.AddControllersWithViews()
     );
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<EventDbContext>();
+builder.Services.AddDbContext<EventDbContext>(o =>
+{
+
+    o.UseNpgsql(builder.Configuration.GetConnectionString("Npgsql"));
+
+});
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEventCalService, EventCalService>();
 builder.Services.AddScoped<IUserService, UserService>();

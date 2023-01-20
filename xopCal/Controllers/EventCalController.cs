@@ -76,7 +76,7 @@ public class EventCalController : ControllerBase
 
     [HttpGet("time")]
     [AllowAnonymous]
-    public ActionResult<List<EventCalDtoOut>> GetAllEventCalByTime([FromBody]TimeDto dto)
+    public ActionResult<List<EventCalDtoOut>> GetAllEventCalByTime([FromQuery]TimeDto dto)
     {
         var le = _eventCalService.GetAllEventCalByTime(dto);
         return le.IsNullOrEmpty() ? NotFound() : Ok(le);

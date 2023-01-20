@@ -14,22 +14,24 @@ namespace xopCal.Services;
 public class AuthService : IAuthService
 {
     
-    AuthenticationSettings authSetting = new AuthenticationSettings()
-    {
-    
-        JwtKey= "PRIVATE_KEY_DONT_SHARE",
-        JwtExpireDays= 15,
-        JwtIssuer= "http://eventcalapi.com"
-    
-    };
+    // AuthenticationSettings authSetting = new AuthenticationSettings()
+    // {
+    //
+    //     JwtKey= "PRIVATE_KEY_DONT_SHARE",
+    //     JwtExpireDays= 15,
+    //     JwtIssuer= "http://eventcalapi.com"
+    //
+    // };
 
     private readonly EventDbContext _context;
     private readonly IPasswordHasher<User> _passwordHasher;
+    private readonly AuthenticationSettings _authSetting;
 
-    public AuthService(EventDbContext context, IPasswordHasher<User> passwordHasher)
+    public AuthService(EventDbContext context, IPasswordHasher<User> passwordHasher,AuthenticationSettings authSetting)
     {
         _context = context;
         _passwordHasher = passwordHasher;
+        _authSetting = authSetting;
     }
 
     public void RegisterUser(UserDtoIn dtoIn)
@@ -74,11 +76,11 @@ public class AuthService : IAuthService
             new Claim(ClaimTypes.Name,user.Name)
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authSetting.JwtKey));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authSetting.JwtKey));
         var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var expires = DateTime.Now.AddDays(authSetting.JwtExpireDays);
+        var expires = DateTime.Now.AddDays(_authSetting.JwtExpireDays);
 
-        var token = new JwtSecurityToken(authSetting.JwtIssuer, authSetting.JwtIssuer, claims, expires: expires , signingCredentials:cred);
+        var token = new JwtSecurityToken(_authSetting.JwtIssuer, _authSetting.JwtIssuer, claims, expires: expires , signingCredentials:cred);
 
         var tokenHandler = new JwtSecurityTokenHandler();
         return tokenHandler.WriteToken(token);
