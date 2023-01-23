@@ -21,8 +21,7 @@ public class EventCalService : IEventCalService
         _context = context;
         _mapper = mapper;
         _hub = hub;
-        
-       Console.WriteLine("#####################################################################################");
+
     }
 
     public async Task StartWatch(int userId)
@@ -41,15 +40,15 @@ public class EventCalService : IEventCalService
     
     public async Task StartWatch(EventCal ec)
     {
-
-        Task.Run(async () =>
-        {
-            if (ec.StartEvent >= DateTime.Now.ToUniversalTime() && !_watchEvents.Contains(ec))
+        Console.WriteLine("\n\n\n\n\n----------------------------------------------------------------------------------\n\n\n\n\n\n\n\n\n\n\n");
+            Console.WriteLine(ec.StartEvent >= DateTime.Now.ToUniversalTime());
+            if (ec.StartEvent >= DateTime.Now.ToUniversalTime())
             {
-                await Watch(ec);
+                Task.Run(()=>Watch(ec));
                 _watchEvents.Add(ec);
+                Console.WriteLine("\n\n\n\n\n----------------------------------------------------------------------------------\n\n\n\n\n\n\n\n\n\n\n");
             }
-        });
+        
         
     }
 
@@ -63,12 +62,15 @@ public class EventCalService : IEventCalService
        
        List<string> lid = new List<string>();
         lid.Add($"{ec.OwnerId}");
+        
         foreach (var ecSubscriber in ec.Subscribers)
         {
             lid.Add($"{ecSubscriber.Id}");
         }
-        _hub.Clients.Users(lid).SendAsync("watch",ec.Id,ec.Name);
+        
+        
         _watchEvents.Remove(ec);
+        await _hub.Clients.Users(lid.ToArray()).SendAsync("watch",ec.Id,ec.Name);
    }
    
 
