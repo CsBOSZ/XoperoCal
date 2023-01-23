@@ -10,6 +10,8 @@ export const useUserStore = defineStore("user", {
     stringNotificationG: null,
     showNotificationG: false,
     ht: "http://localhost:5240",
+    se: 0,
+    ss: 0
   }),
   getters: {},
   actions: {

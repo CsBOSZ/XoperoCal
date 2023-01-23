@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref , watch} from "vue";
 import modal from "./modules/modal.vue";
 import notification from "./modules/notification.vue";
 import eventItem from "./modules/eventItem.vue";
@@ -7,7 +7,7 @@ import { useUserStore } from "../store/user";
 import { storeToRefs } from "pinia";
 
 const user = useUserStore();
-const { ht } = storeToRefs(user);
+const { ht , ss , se} = storeToRefs(user);
 
 const props = defineProps({
   userId: {
@@ -66,6 +66,12 @@ fetch(ht.value + "/User/true/" + props.userId, requestOptions, requestOptions)
         
 }
 userfetch();
+
+watch( [ss,se] ,([newss,newse])=>{
+
+userfetch();
+
+});
 
 </script>
 

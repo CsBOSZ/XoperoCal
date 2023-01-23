@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using xopCal.Entity;
 using xopCal.Hubs;
 using xopCal.Model;
@@ -13,11 +14,89 @@ public class EventCalService : IEventCalService
     private readonly EventDbContext _context;
     private readonly IMapper _mapper;
     private readonly IHubContext<EventHub> _hub;
+    private static List<EventCal>? _watchEvents; 
+    
     public EventCalService(EventDbContext context,IMapper mapper, IHubContext<EventHub> hub)
     {
         _context = context;
         _mapper = mapper;
         _hub = hub;
+        
+       Console.WriteLine("#####################################################################################");
+    }
+
+    public void StartWatch(int userId)
+    {
+        
+        WatchSelect(userId);
+          
+    }
+    
+    public void StartWatch(EventCal ec)
+    {
+
+        var t = new Thread(async () =>
+        {
+            if (!_watchEvents.IsNullOrEmpty() && ec.StartEvent >= DateTime.Now.ToUniversalTime() && _watchEvents.Contains(ec))
+            {
+                await Watch(ec);
+                _watchEvents.Add(ec);
+            }
+        });
+        t.Start();
+    
+    }
+   private void WatchSelect(int userId)
+    {
+        
+      
+        var we = _context.EventCals.Where(e => e.OwnerId == userId && e.StartEvent >= DateTime.Now.ToUniversalTime()).OrderBy(e => e.StartEvent).Include(e => e.Subscribers).ToList();
+        if (!we.IsNullOrEmpty())
+        {
+            foreach (var eventCal in we)
+            {
+                Watch(eventCal);
+            }
+        }
+        
+    }
+
+   private Task Watch(EventCal ec)
+   {
+       while (DateTime.Now < ec.StartEvent)
+       {
+           TimeSpan r = ec.StartEvent - DateTime.Now;
+           Thread.Sleep(r);
+       }
+
+       List<string> lid = new List<string>();
+        lid.Add($"{ec.OwnerId}");
+        foreach (var ecSubscriber in ec.Subscribers)
+        {
+            lid.Add($"{ecSubscriber.Id}");
+        }
+        _hub.Clients.Users(lid).SendAsync("watch",ec.Id,ec.Name);
+        _watchEvents.Remove(ec);
+       return Task.CompletedTask;
+   }
+   
+
+    public bool PutSnooze(int id,int userId)
+    {
+        
+        EventCal? e = _context.EventCals.FirstOrDefault(e => e.Id == id);
+        if (e is not null && e.OwnerId == userId)
+        {
+            e.StartEvent = e.StartEvent.AddMinutes(5).ToUniversalTime();
+            e.EndEvent = e.EndEvent.AddMinutes(5).ToUniversalTime();
+            _context.EventCals.Update(e);
+            _context.SaveChanges();
+            _hub.Clients.All.SendAsync("newevent");
+            StartWatch(e);
+            return true;
+        }
+        return false;
+        
     }
 
     public EventCalDtoOut? GetEventCalById(int? id)
@@ -89,6 +168,7 @@ public class EventCalService : IEventCalService
         _context.EventCals.Add(e);
         _context.SaveChanges();
         _hub.Clients.All.SendAsync("newevent");
+        StartWatch(e);
         return true;
     }
     
@@ -107,6 +187,7 @@ public class EventCalService : IEventCalService
             _context.EventCals.Update(e);
             _context.SaveChanges();
             _hub.Clients.All.SendAsync("newevent");
+            StartWatch(e);
             return true;
         }
         return false;

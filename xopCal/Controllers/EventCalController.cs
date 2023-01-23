@@ -25,6 +25,17 @@ public class EventCalController : ControllerBase
         _eventCalService = eventCalService;
     }
 
+    [HttpPut("Snooze/{id}")]
+    public ActionResult PutSnooze([FromRoute]int id)
+    {
+        var c = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+        if (c is not null && int.TryParse(c.Value,out int result))
+        {
+           return _eventCalService.PutSnooze(id,result) ? Ok() : BadRequest();
+        }
+        return BadRequest();
+    }
+    
     [HttpGet("{id}")]
     [AllowAnonymous]
     public ActionResult<EventCalDtoOut> GetEventCalById([FromRoute]int id)
