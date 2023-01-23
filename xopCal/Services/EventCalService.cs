@@ -25,50 +25,42 @@ public class EventCalService : IEventCalService
        Console.WriteLine("#####################################################################################");
     }
 
-    public void StartWatch(int userId)
+    public async Task StartWatch(int userId)
     {
-        
-        WatchSelect(userId);
+        var we = _context.EventCals.Where(e => e.OwnerId == userId && e.StartEvent >= DateTime.Now.ToUniversalTime()).OrderBy(e => e.StartEvent).Include(e => e.Subscribers).ToList();
+        if (!we.IsNullOrEmpty()) 
+        {
+            foreach (var eventCal in we)
+            {
+                Task.Run(() => Watch(eventCal));
+                
+            }
+        }
           
     }
     
-    public void StartWatch(EventCal ec)
+    public async Task StartWatch(EventCal ec)
     {
 
-        var t = new Thread(async () =>
+        Task.Run(async () =>
         {
-            if (!_watchEvents.IsNullOrEmpty() && ec.StartEvent >= DateTime.Now.ToUniversalTime() && _watchEvents.Contains(ec))
+            if (ec.StartEvent >= DateTime.Now.ToUniversalTime() && !_watchEvents.Contains(ec))
             {
                 await Watch(ec);
                 _watchEvents.Add(ec);
             }
         });
-        t.Start();
-    
-    }
-   private void WatchSelect(int userId)
-    {
-        
-      
-        var we = _context.EventCals.Where(e => e.OwnerId == userId && e.StartEvent >= DateTime.Now.ToUniversalTime()).OrderBy(e => e.StartEvent).Include(e => e.Subscribers).ToList();
-        if (!we.IsNullOrEmpty())
-        {
-            foreach (var eventCal in we)
-            {
-                Watch(eventCal);
-            }
-        }
         
     }
 
-   private Task Watch(EventCal ec)
+ 
+
+   private async Task Watch(EventCal ec)
    {
-       while (DateTime.Now < ec.StartEvent)
-       {
-           TimeSpan r = ec.StartEvent - DateTime.Now;
-           Thread.Sleep(r);
-       }
-
+       
+       var r = ec.StartEvent - DateTime.Now.ToUniversalTime();
+       await Task.Delay(r);
+       
        List<string> lid = new List<string>();
         lid.Add($"{ec.OwnerId}");
         foreach (var ecSubscriber in ec.Subscribers)
@@ -77,7 +69,6 @@ public class EventCalService : IEventCalService
         }
         _hub.Clients.Users(lid).SendAsync("watch",ec.Id,ec.Name);
         _watchEvents.Remove(ec);
-       return Task.CompletedTask;
    }
    
 

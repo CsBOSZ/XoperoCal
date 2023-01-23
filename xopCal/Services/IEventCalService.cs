@@ -5,9 +5,9 @@ namespace xopCal.Services;
 
 public interface IEventCalService
 {
-    public void StartWatch(int userId);
+    public Task StartWatch(int userId);
 
-    public void StartWatch(EventCal ec);
+    public Task StartWatch(EventCal ec);
     public bool PutSnooze(int id, int userId);
     EventCalDtoOut? GetEventCalById(int? id);
     int GetStatus(int id,int userId);
