@@ -14,7 +14,7 @@ public class EventCalService : IEventCalService
     private readonly EventDbContext _context;
     private readonly IMapper _mapper;
     private readonly IHubContext<EventHub> _hub;
-    private static List<EventCal>? _watchEvents; 
+
     
     public EventCalService(EventDbContext context,IMapper mapper, IHubContext<EventHub> hub)
     {
@@ -24,9 +24,9 @@ public class EventCalService : IEventCalService
 
     }
 
-    public async Task StartWatch(int userId)
+    public async Task StartWatch()
     {
-        var we = _context.EventCals.Where(e => e.OwnerId == userId && e.StartEvent >= DateTime.Now.ToUniversalTime()).OrderBy(e => e.StartEvent).Include(e => e.Subscribers).ToList();
+        var we = _context.EventCals.Where(e =>  e.StartEvent >= DateTime.Now.ToUniversalTime()).OrderBy(e => e.StartEvent).ToList();
         if (!we.IsNullOrEmpty()) 
         {
             foreach (var eventCal in we)
@@ -40,37 +40,22 @@ public class EventCalService : IEventCalService
     
     public async Task StartWatch(EventCal ec)
     {
-        Console.WriteLine("\n\n\n\n\n----------------------------------------------------------------------------------\n\n\n\n\n\n\n\n\n\n\n");
+     
             Console.WriteLine(ec.StartEvent >= DateTime.Now.ToUniversalTime());
             if (ec.StartEvent >= DateTime.Now.ToUniversalTime())
             {
                 Task.Run(()=>Watch(ec));
-                _watchEvents.Add(ec);
-                Console.WriteLine("\n\n\n\n\n----------------------------------------------------------------------------------\n\n\n\n\n\n\n\n\n\n\n");
             }
-        
-        
+            
     }
-
- 
 
    private async Task Watch(EventCal ec)
    {
-       
        var r = ec.StartEvent - DateTime.Now.ToUniversalTime();
        await Task.Delay(r);
-       
-       List<string> lid = new List<string>();
-        lid.Add($"{ec.OwnerId}");
-        
-        foreach (var ecSubscriber in ec.Subscribers)
-        {
-            lid.Add($"{ecSubscriber.Id}");
-        }
-        
-        
-        _watchEvents.Remove(ec);
-        await _hub.Clients.Users(lid.ToArray()).SendAsync("watch",ec.Id,ec.Name);
+       // Console.WriteLine(ev.StartEvent >= DateTime.Now.ToUniversalTime().AddMinutes(-5) && ev.StartEvent <= DateTime.Now.ToUniversalTime().AddMinutes(5));
+       // if(ev.StartEvent >= DateTime.Now.ToUniversalTime().AddMinutes(-5) && ev.StartEvent <= DateTime.Now.ToUniversalTime().AddMinutes(5))
+           await _hub.Clients.All.SendAsync("watch",ec.Id,ec.Name,ec.OwnerId);
    }
    
 

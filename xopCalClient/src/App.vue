@@ -15,6 +15,8 @@ const { showNotificationG, stringNotificationG, jwt, id, ht , ss , se} =
   const showwatchevent = new ref(false);
   const idwatchevent = new ref(null);
   const namewatchevent = new ref(null);
+  const idowatchevent = new ref(null);
+
 
 function getDaysInMonth(month, year) {
   var date = new Date(year, month, 1);
@@ -67,10 +69,11 @@ connection.on("UnSubscribe", (en,un) => {
   ss.value++;
 });
 
-connection.on("watch", (eid,en) => {
+connection.on("watch", (eid,en,owid) => {
 
   namewatchevent.value = en;
   idwatchevent.value = +eid;
+  idowatchevent.value = +owid;
   showwatchevent.value = true;
 
 });
@@ -102,7 +105,7 @@ fetch(ht.value+"/Event/Snooze/"+ idwatchevent.value, requestOptions)
     <teleport to="body">
       <span class="watchevent" v-show="showwatchevent">
           <h2>{{ namewatchevent }}</h2>
-          <span><button @click="snoozef">snooze</button><button @click="showwatchevent = false" >confirm</button></span>
+          <span><button @click="snoozef" v-if="idowatchevent == id">snooze</button><button @click="showwatchevent = false" >confirm</button></span>
           
       </span>
       <notification :not="stringNotificationG" :show="showNotificationG" />

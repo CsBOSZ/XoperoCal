@@ -101,6 +101,8 @@ builder.Services.AddScoped<IValidator<EventCalDtoIn>, EventCalDtoValidator>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddSignalR();
 
+builder.Services.AddHostedService<StartUpService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
